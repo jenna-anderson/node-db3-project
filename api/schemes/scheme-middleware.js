@@ -30,12 +30,12 @@ const checkSchemeId = async (req, res, next) => {
 const validateScheme = (req, res, next) => {
   const { scheme_name } = req.body
   console.log(scheme_name)
-  if(!scheme_name || typeof scheme_name !== 'string' ||  scheme_name.length === 0){
+  if(!scheme_name || typeof scheme_name !== 'string'){
     res.status(400).json({
       message: 'invalid scheme_name'
     })
   } else {
-    next()
+      next()
   }
 }
 
@@ -49,7 +49,20 @@ const validateScheme = (req, res, next) => {
   }
 */
 const validateStep = (req, res, next) => {
-  next()
+  const { instructions, step_number } = req.body
+  console.log(step_number, instructions)
+  if(!instructions || typeof instructions !== 'string'){
+    res.status(400).json({
+      message: 'invalid step'
+    })
+  }
+  if(!step_number || isNaN(step_number) || step_number < 1){
+    res.status(400).json({
+      message: 'invalid step'
+    })
+  } else {
+      next()
+  }
 }
 
 module.exports = {
