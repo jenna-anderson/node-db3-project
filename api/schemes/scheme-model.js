@@ -1,5 +1,6 @@
 const db = require('../../data/db-config')
 
+
 function find() { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
@@ -27,7 +28,7 @@ function find() { // EXERCISE A
   return schemes
 }
 
-function findById(scheme_id) { // EXERCISE B
+async function findById(scheme_id) { // EXERCISE B
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -41,9 +42,17 @@ function findById(scheme_id) { // EXERCISE B
       ORDER BY st.step_number ASC;
 
     2B- When you have a grasp on the query go ahead and build it in Knex
-    making it parametric: instead of a literal `1` you should use `scheme_id`.
+    making it parametric: instead of a literal `1` you should use `scheme_id`. */
 
-    3B- Test in Postman and see that the resulting data does not look like a scheme,
+    const stepsRepeat = await db
+      .select('sc.scheme_name', 'st.*')
+      .from('schemes as sc')
+      .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
+      .where('sc.scheme_id', scheme_id)
+      .orderBy('st.step_number')
+    // console.log(stepsRepeat)
+    // return steps
+    /*3B- Test in Postman and see that the resulting data does not look like a scheme,
     but more like an array of steps each including scheme information:
 
       [
@@ -93,6 +102,30 @@ function findById(scheme_id) { // EXERCISE B
         "steps": []
       }
   */
+
+  if(!stepsRepeat[0]["step_id"]){
+    const steps = {
+      "scheme_id": scheme_id,
+      "scheme_name": stepsRepeat[0]["scheme_name"],
+      "steps": []
+    }
+    return steps
+  } else {
+      const stepsArray = stepsRepeat.map(stepObj => {
+        return {
+          "step_id": stepObj["step_id"],
+          "step_number": stepObj["step_number"],
+          "instructions": stepObj["instructions"]
+        }
+      })
+      const steps = {
+        "scheme_id": stepsRepeat[0]["scheme_id"],
+        "scheme_name": stepsRepeat[0]["scheme_name"],
+        "steps": stepsArray
+      }
+      return steps
+  }
+      
 }
 
 function findSteps(scheme_id) { // EXERCISE C
