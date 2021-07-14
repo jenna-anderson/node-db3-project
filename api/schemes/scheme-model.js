@@ -1,7 +1,10 @@
+const db = require('../../data/db-config')
+
 function find() { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
     What happens if we change from a LEFT join to an INNER join?
+      - the "Have fun!" scheme doesn't show up because it doesn't have any steps associated with it
 
       SELECT
           sc.*,
@@ -15,6 +18,13 @@ function find() { // EXERCISE A
     2A- When you have a grasp on the query go ahead and build it in Knex.
     Return from this function the resulting dataset.
   */
+  const schemes = db
+    .select('sc.*').count('st.step_id as number_of_steps')
+    .from('schemes as sc')
+    .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
+  .groupBy('sc.scheme_id')
+  .orderBy('sc.scheme_id')
+  return schemes
 }
 
 function findById(scheme_id) { // EXERCISE B
