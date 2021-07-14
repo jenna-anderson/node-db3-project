@@ -1,6 +1,5 @@
 const db = require('../../data/db-config')
 
-
 function find() { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
@@ -189,9 +188,14 @@ async function addStep(scheme_id, step) { // EXERCISE E
         scheme_id: scheme_id
       }
     )
-      console.log(id)
   const newSteps = await findSteps(scheme_id)
   return newSteps
+}
+
+async function checkId(id) {
+  const [scheme] = await db('schemes')
+    .where('scheme_id', id)
+  return scheme
 }
 
 module.exports = {
@@ -200,4 +204,5 @@ module.exports = {
   findSteps,
   add,
   addStep,
+  checkId
 }
